@@ -8,7 +8,7 @@ const getUsers = async (req, res) => {
     const users = await User.find();
     return res.status(200).json(users); //send the users as a response
   } catch (error) {
-    return res.status(400).json("Error fetching users:", error);
+    return res.status(400).json({ message: "Error fetching users:", error: error.message });
   }
 }
 
@@ -37,7 +37,7 @@ const register = async (req, res) => {
     const savedUser = await newUser.save(); //save the user to the database
     res.status(201).json(savedUser); //send the saved user as a response
   } catch (error) {
-    res.status(400).json("Error registering user:",error); //send error response
+    res.status(400).json({message: "Error registering user:",error: error.message}); //send error response
   }
 }
 
@@ -55,7 +55,7 @@ const login = async (req, res) => {
       return res.status(400).json("Email or password incorrect");
     }
 } catch (error) {
-  return res.status(400).json("Error logging in:", error);
+  return res.status(400).json({message: "Error logging in:", error: error.message});
   }
 }
 
@@ -95,7 +95,7 @@ const updateUser = async(req, res) => {
     
   } catch (error) {
     const errorMessage = error.message || "Error updating user";
-    res.status(400).json({ message: errorMessage, error: error });
+    res.status(400).json({ message: errorMessage, error: error.message });
   }
 }
 
@@ -121,7 +121,7 @@ const deleteUser = async (req, res) => {
 
     res.status(200).json("User deleted successfully");
   } catch (error) {
-    res.status(500).json("Error deleting user:", error);
+    res.status(500).json({ message: "Error deleting user:", error: error.message });
   }
 };
 

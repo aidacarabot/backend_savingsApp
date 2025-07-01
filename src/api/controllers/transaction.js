@@ -6,7 +6,7 @@ const getAllTransactions = async (req, res) => {
     const transactions = await Transaction.find(); // Obtener todas las transacciones
     return res.status(200).json(transactions); // Enviar las transacciones como respuesta
   } catch (error) {
-    return res.status(500).json("Error fetching transactions:", error);
+    return res.status(500).json({ message: "Error fetching transactions:", error: error.message });
   }
 }
 
@@ -51,7 +51,7 @@ const deleteTransaction = async (req, res) => {
 
     res.status(200).json("Transaction deleted successfully");
   } catch (error) {
-    res.status(500).json("Error deleting transaction:", error);
+    res.status(500).json({ message: "Error deleting transaction:", error: error.message });
   }
 }
 
@@ -85,7 +85,7 @@ const editTransaction = async (req, res) => {
     const updatedTransaction = await transaction.save(); // guardamos los cambios en la DB
     res.status(200).json(updatedTransaction); // Devolvemos la transacción actualizada
   } catch (error) {
-    res.status(500).json("Error updating transaction:", error);
+    res.status(500).json({ message: "Error updating transaction:", error: error.message });
   }
 };
 

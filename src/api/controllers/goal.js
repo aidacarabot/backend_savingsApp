@@ -45,7 +45,7 @@ const createGoal = async (req, res) => {
     res.status(201).json(savedGoal); // Enviar el goal creado con todos los detalles
 
   } catch (error) {
-    res.status(400).json("Error creating goal:", error);
+    res.status(400).json({ message: "Error creating goal:", error: error.message });
   }
 };
 
@@ -55,7 +55,7 @@ const getAllGoals = async (req, res) => {
     const goals = await Goal.find();
     return res.status(200).json(goals); 
   } catch (error) {
-    return res.status(500).json("Error fetching goals:", error);
+    return res.status(500).json({ message: "Error fetching goals:", error: error.message });
   }
 };
 
@@ -96,7 +96,7 @@ const editGoal = async (req, res) => {
     const updatedGoal = await goal.save();
     res.status(200).json('Goal updated successfully', updatedGoal) // Enviamos el goal actualizado como respuesta
   } catch (error) {
-    res.status(500).json("Error updating goal:", error); // Si hay algún error, respondemos con un 500
+    res.status(500).json({ message: 'Error updating goal:', error: error.message }) // Si hay algún error, respondemos con un 500
   }
 };
 
@@ -114,7 +114,7 @@ const deleteGoal = async (req, res) => {
     await Goal.findByIdAndDelete(id);
     res.status(200).json("Goal deleted successfully"); // Enviamos respuesta de éxito
   } catch (error) {
-    res.status(500).json("Error deleting goal:", error); // Si hay un error, respondemos con un 500
+    res.status(500).json({ message: 'Error deleting goal:', error: error.message }) // Si hay un error, respondemos con un 500
   }
 };
 
