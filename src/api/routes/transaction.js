@@ -1,10 +1,11 @@
+const { isAuth } = require('../../middlewares/auth');
 const { addTransaction, deleteTransaction, editTransaction, getAllTransactions, getFilteredTransactions } = require('../controllers/transaction');
 
 const transactionsRoutes = require('express').Router();
 
-transactionsRoutes.get('/', getAllTransactions);
-transactionsRoutes.post('/', addTransaction);
-transactionsRoutes.delete('/:id', deleteTransaction);
-transactionsRoutes.put('/:id', editTransaction);
+transactionsRoutes.get('/', [isAuth], getAllTransactions);
+transactionsRoutes.post('/',[isAuth], addTransaction);
+transactionsRoutes.delete('/:id', [isAuth], deleteTransaction);
+transactionsRoutes.put('/:id', [isAuth], editTransaction);
 
 module.exports = transactionsRoutes;
