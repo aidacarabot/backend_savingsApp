@@ -1,6 +1,7 @@
 const User = require("../models/user");
 const bcrypt = require("bcryptjs");
 const { generateSign } = require("../../config/jwt");
+const { deleteImgCloudinary } = require("../../utils/deleteFileCloudinary");
 
 //! GET USERS
 const getUsers = async (req, res) => {
@@ -61,8 +62,8 @@ const login = async (req, res) => {
 
 //! UPDATE USER
 const updateUser = async(req, res) => {
-  const {id} = req.params;
-  const {name, birthDate, profilePicture, monthlySalary, monthlyExpenses} = req.body;
+  const { id } = req.params;
+  const { name, birthDate, monthlySalary, monthlyExpenses } = req.body;
 
   try {
     //? Verificar si el usuario existe
@@ -71,11 +72,23 @@ const updateUser = async(req, res) => {
       return res.status(404).json("User not found");
     }
 
+ 
+    // Si se va a cambiar la imagen de perfil, eliminamos la antigua (si existe)
+    if (req.file) {
+      console.log('Nuevo archivo de imagen recibido:', req.file);
+      if (user.profilePicture && user.profilePicture !== '/img/default-profile.png') {
+        // Eliminar la imagen anterior de Cloudinary
+        await deleteImgCloudinary(user.profilePicture);
+      }
+
+      // Actualizar la imagen de perfil
+      user.profilePicture = req.file.path; // `req.file.path` es la nueva URL de la imagen en Cloudinary
+    }
+
     //? Actualizar los datos del usuario
     user.name = name || user.name;
     user.birthDate = birthDate || user.birthDate;
     user.monthlySalary = monthlySalary || user.monthlySalary;
-    user.profilePicture = profilePicture || user.profilePicture;
     
     //? Si se pasan nuevos monthlyExpenses, actualizamos las categorías correspondientes
     if (monthlyExpenses) {
@@ -114,6 +127,11 @@ const deleteUser = async (req, res) => {
     const user = await User.findById(id);
     if (!user) {
       return res.status(404).json("User not found");
+    }
+
+    //? Si tiene una imagen personalizada (no la por defecto), eliminarla de Cloudinary
+    if (user.profilePicture && user.profilePicture !== '/img/default-profile.png') {
+      await deleteImgCloudinary(user.profilePicture);
     }
 
     //? Eliminar el usuario

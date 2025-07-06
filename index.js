@@ -4,12 +4,15 @@ const connectDB = require('./src/config/db');
 const usersRoutes = require('./src/api/routes/user');
 const transactionsRoutes = require('./src/api/routes/transaction');
 const goalsRoutes = require('./src/api/routes/goal');
+const { connectCloudinary } = require('./src/utils/cloudinary');
 
 const app = express();
 
 app.use(express.json());
 
 connectDB();
+
+connectCloudinary();
 
 app.use('/api/v1/users', usersRoutes);
 app.use('/api/v1/transactions', transactionsRoutes);
