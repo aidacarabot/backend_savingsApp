@@ -1,5 +1,6 @@
 require('dotenv').config();
 const express = require('express');
+const cors = require('cors');
 const connectDB = require('./src/config/db');
 const usersRoutes = require('./src/api/routes/user');
 const transactionsRoutes = require('./src/api/routes/transaction');
@@ -8,6 +9,14 @@ const { connectCloudinary } = require('./src/utils/cloudinary');
 
 const app = express();
 
+// Configurar CORS para permitir solicitudes de localhost:5173 (tu frontend)
+const corsOptions = {
+  origin: '*', // Permite solicitudes desde cualquier origen
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type'], // Permite encabezados 'Content-Type'
+};
+
+app.use(cors(corsOptions)); // Aplicar CORS a todas las rutas
 app.use(express.json());
 
 connectDB();
