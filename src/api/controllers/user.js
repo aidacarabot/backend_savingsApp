@@ -13,6 +13,24 @@ const getUsers = async (req, res) => {
   }
 }
 
+//! GET USER BY ID
+const getUserById = async (req, res) => {
+  try {
+    const { id } = req.params; //get the user id from the request parameters
+    const user = await User.findById(id)
+      .populate("transactions") //populate the transactions field with the transactions data
+      .populate("goals") //populate the goals field with the goals data
+
+    if (!user) {
+      return res.status(404).json("User not found"); //if the user is not found, send a 404 error
+    }
+    return res.status(200).json(user); //send the user as a response with populated transactions and goals
+  } catch (error) {
+    console.error("Error fetching user:", error);
+    return res.status(400).json({ message: "Error fetching user:", error: error.message });
+  }
+};
+
 //! REGISTER NEW USER
 const register = async (req, res) => {
   const {name, birthDate, email, password, repeatPassword} = req.body; //destructuring the request body
@@ -145,4 +163,4 @@ const deleteUser = async (req, res) => {
   }
 };
 
-module.exports = { register, login, getUsers, updateUser, deleteUser };
+module.exports = { register, login, getUsers, updateUser, deleteUser, getUserById };
