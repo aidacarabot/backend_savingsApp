@@ -1,4 +1,6 @@
+const mongoose = require('mongoose');
 const Transaction = require('../../api/models/transaction');
+const User = require('../models/user');
 
 //! GET ALL TRANSACTIONS
 const getAllTransactions = async (req, res) => {
@@ -12,30 +14,51 @@ const getAllTransactions = async (req, res) => {
 
 //! ADD NEW TRANSACTION
 const addTransaction = async (req, res) => {
-  const { type, name, amount, date, category } = req.body;
+  const { type, name, amount, date, category, user } = req.body;
 
-  //? Validar que si el tipo es "Expense", se debe especificar la categoría
+  // Validar que si el tipo es "Expense", se debe especificar la categoría
   if (type === 'Expense' && !category) {
     return res.status(400).json("Category is required for expenses");
   }
 
   try {
-    //? Crear una nueva transacción
+    // Validar que el ID del usuario es válido
+    if (!mongoose.Types.ObjectId.isValid(user)) {
+      return res.status(400).json("Invalid user ID");
+    }
+
+    console.log("User ID:", user);  // Depurar el ID del usuario
+
+    // Crear una nueva transacción
     const newTransaction = new Transaction({
       type,
       name,
       amount,
       date,
       category: type === 'Expense' ? category : undefined, // Si no es "Expense", no asignamos category
+      user
     });
 
-    //? Guardar la transacción en la base de datos
+    // Guardar la transacción en la base de datos
     const savedTransaction = await newTransaction.save();
-    
+
+    // Verificar si el usuario existe
+    const userToUpdate = await User.findById(new mongoose.Types.ObjectId(user));
+    console.log('Result of User.findById:', userToUpdate); // Add this line to inspect the result
+    if (!userToUpdate) {
+      return res.status(404).json("User not found");
+    }
+
+    // Actualizar el campo `transactions` del usuario con el ID de la nueva transacción
+    const updatedUser = await User.findByIdAndUpdate(user, {
+      $push: { transactions: savedTransaction._id }  // Agregar el ID de la nueva transacción al array `transactions`
+    }, { new: true });  // Asegúrate de que se retorne el usuario actualizado
+
+    console.log('Updated User:', updatedUser);  // Verificar el usuario actualizado
+
     res.status(201).json(savedTransaction); // Enviar la transacción recién creada
   } catch (error) {
     res.status(500).json({ message: "Error adding transaction", error: error.message });
-
   }
 };
 
