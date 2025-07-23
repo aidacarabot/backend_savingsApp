@@ -4,10 +4,9 @@ const User = require('../models/user'); //para sacar edad del user
 //! CREATE NEW GOAL
 const createGoal = async (req, res) => {
   const { goalName, targetAmount, completionDate, monthlyContribution } = req.body;
-  const userId = req.user._id;  // El id del usuario lo tomamos de req.user (que se pasa en isAuth)
+  const userId = req.user._id;
 
   try {
-    //? Obtener el usuario por el ID para obterner el birthDate
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json("User not found");
@@ -16,33 +15,35 @@ const createGoal = async (req, res) => {
     let calculatedCompletionDate = completionDate;
     let calculatedMonthlyContribution = monthlyContribution;
 
-    //? Calcular la fecha de finalización si se proporciona monthlyContribution
     if (monthlyContribution && !completionDate) {
       const monthsRemaining = targetAmount / monthlyContribution;
       calculatedCompletionDate = new Date();
       calculatedCompletionDate.setMonth(calculatedCompletionDate.getMonth() + monthsRemaining);
     }
 
-    //? Calcular monthlyContribution si se proporciona completionDate
     if (completionDate && !monthlyContribution) {
-      const monthsRemaining = (new Date(completionDate) - new Date()) / (1000 * 60 * 60 * 24 * 30); // Convertimos a meses
+      const monthsRemaining = (new Date(completionDate) - new Date()) / (1000 * 60 * 60 * 24 * 30);
       calculatedMonthlyContribution = targetAmount / monthsRemaining;
     }
 
-    //? Calcular la edad del usuario en el momento de alcanzar el objetivo
     const ageAtGoalCompletion = new Date(calculatedCompletionDate).getFullYear() - new Date(user.birthDate).getFullYear();
 
-    //? Crear el nuevo goal
+    // 1. Add user reference to the goal
     const newGoal = new Goal({
       goalName,
       targetAmount,
       completionDate: calculatedCompletionDate,
       monthlyContribution: calculatedMonthlyContribution,
       ageAtGoalCompletion,
+      user: userId // <-- Add this line
     });
 
     const savedGoal = await newGoal.save();
-    res.status(201).json(savedGoal); // Enviar el goal creado con todos los detalles
+
+    // 2. Push the goal's _id to the user's goals array
+    await User.findByIdAndUpdate(userId, { $push: { goals: savedGoal._id } });
+
+    res.status(201).json(savedGoal);
 
   } catch (error) {
     res.status(400).json({ message: "Error creating goal:", error: error.message });

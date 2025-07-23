@@ -15,11 +15,12 @@ const getAllTransactions = async (req, res) => {
 
 //! ADD NEW TRANSACTION
 const addTransaction = async (req, res) => {
-  const { type, name, amount, date, category, user } = req.body
+  const { type, name, amount, date, category } = req.body;
+  const userId = req.user._id; // Get user from token
 
   // Validar que si el tipo es "Expense", se debe especificar la categoría
   if (type === 'Expense' && !category) {
-    return res.status(400).json('Category is required for expenses')
+    return res.status(400).json('Category is required for expenses');
   }
 
   try {
@@ -29,24 +30,24 @@ const addTransaction = async (req, res) => {
       name,
       amount,
       date,
-      category: type === 'Expense' ? category : undefined, // Si no es "Expense", no asignamos category
-      user
-    })
+      category: type === 'Expense' ? category : undefined,
+      user: userId // Use authenticated user
+    });
 
     // Guardar la transacción en la base de datos
-    const savedTransaction = await newTransaction.save()
+    const savedTransaction = await newTransaction.save();
 
     // Añadir la transacción al array de transacciones del usuario
     await User.findByIdAndUpdate(
-      user,
+      userId,
       { $push: { transactions: savedTransaction._id } }
     );
 
-    res.status(201).json(savedTransaction) // Enviar la transacción recién creada
+    res.status(201).json(savedTransaction); // Enviar la transacción recién creada
   } catch (error) {
     res
       .status(500)
-      .json({ message: 'Error adding transaction', error: error.message })
+      .json({ message: 'Error adding transaction', error: error.message });
   }
 }
 
