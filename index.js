@@ -13,7 +13,7 @@ const app = express();
 const corsOptions = {
   origin: '*', // Permite solicitudes desde cualquier origen
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type'], // Permite encabezados 'Content-Type'
+  allowedHeaders: ['Content-Type', 'Authorization'], // Permite encabezados 'Content-Type'
 };
 
 app.use(cors(corsOptions)); // Aplicar CORS a todas las rutas
