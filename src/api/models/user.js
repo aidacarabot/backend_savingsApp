@@ -68,6 +68,14 @@ const userSchema = new Schema({
       type: Number,
       default: 0
     },
+    monthlyExpectedExpenses: {
+      type: Object,
+      default: defaultExpenses
+    },
+    totalExpectedExpenses: {
+      type: Number,
+      default: 0
+    },
     // Referencias a transacciones y metas
     transactions: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Transaction' }],  // Relación con transacciones
     goals: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Goal' }]  // Relación con metas

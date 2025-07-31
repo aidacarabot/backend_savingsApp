@@ -83,7 +83,7 @@ const login = async (req, res) => {
 //! UPDATE USER
 const updateUser = async(req, res) => {
   const { id } = req.params;
-  const { name, birthDate, monthlySalary, monthlyExpenses } = req.body;
+  const { name, birthDate, monthlySalary, monthlyExpenses, monthlyExpectedExpenses } = req.body;
 
   try {
     //? Verificar si el usuario existe
@@ -118,9 +118,21 @@ const updateUser = async(req, res) => {
       };
     }
 
+    //? Si se pasan nuevos monthlyExpectedExpenses, actualizamos las categorías correspondientes
+    if (monthlyExpectedExpenses) {
+      user.monthlyExpectedExpenses = {
+        ...user.monthlyExpectedExpenses, // Mantén las categorías existentes
+        ...monthlyExpectedExpenses      // Actualiza las categorías pasadas en la solicitud
+      };
+    }
+
     //? Calcular el total de los gastos después de la actualización
     const totalExpenses = Object.values(user.monthlyExpenses).reduce((acc, curr) => acc + curr, 0);
     user.totalExpenses = Number(totalExpenses);
+
+    //? Calcular el total de los gastos esperados
+    const totalExpectedExpenses = Object.values(user.monthlyExpectedExpenses).reduce((acc, curr) => acc + curr, 0);
+    user.totalExpectedExpenses = Number(totalExpectedExpenses);
 
     //?Guardar los cambios en la base de datos
     const updatedUser = await user.save();
