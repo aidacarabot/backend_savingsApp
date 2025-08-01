@@ -17,33 +17,40 @@ This is the backend for the **Savings App**, a personal finance application desi
 - **Mongoose**: ODM (Object Data Modeling) library for MongoDB.
 - **JWT (JSON Web Token)**: For user authentication and authorization.
 
+# 📌 Available Routes
 
-### Available Routes 🚪
+## **User** 👤
 
-#### **User** 👤
-| **HTTP Method** | **Endpoint**               | **Description**                                                   | **Protected** |
-|-----------------|----------------------------|-------------------------------------------------------------------|---------------|
-| GET             | `/api/v1/users`            | Fetch all users.                                                  | No            |
-| POST            | `/api/v1/register`         | Register a new user.                                              | No            |
-| POST            | `/api/v1/login`            | User login, returns JWT token for authentication.                 | No            |
-| PUT             | `/api/v1/users/:id`        | Update user details (name, birth date, salary, expenses, etc.).   | Yes           |
-| DELETE          | `/api/v1/users/:id`        | Delete a user by their ID.                                        | Yes           |
+| **HTTP Method** | **Endpoint**               | **Description**                                                   | **Protected** | **Data Fields** |
+|-----------------|----------------------------|-------------------------------------------------------------------|---------------|-----------------|
+| **GET**         | `/api/v1/users`            | Fetch all users.                                                  | No            | Returns: `name`, `birthDate`, `email`, `profilePicture`, `monthlySalary`, `monthlyExpenses`, `totalExpenses`, `monthlyExpectedExpenses`, `totalExpectedExpenses`, `transactions[]`, `goals[]` |
+| **GET**         | `/api/v1/users/:id`        | Fetch a specific user by ID, including transactions and goals.    | Yes           | Same as above, but only for the specified user. |
+| **POST**        | `/api/v1/users/register`   | Register a new user.                                              | No            | Requires: `name`, `birthDate`, `email`, `password`, `repeatPassword` |
+| **POST**        | `/api/v1/users/login`      | User login, returns JWT token.                                    | No            | Requires: `email`, `password`<br>Returns: `user` object, `token` |
+| **PUT**         | `/api/v1/users/:id`        | Update user details.                                              | Yes           | Accepts: `name`, `birthDate`, `monthlySalary`, `monthlyExpenses` (object), `monthlyExpectedExpenses` (object), `profilePicture` (file upload) |
+| **DELETE**      | `/api/v1/users/:id`        | Delete a user by ID.                                              | Yes           | Requires: Authenticated user must match the ID. |
 
-#### **Transaction** 💳
-| **HTTP Method** | **Endpoint**               | **Description**                                                   | **Protected** |
-|-----------------|----------------------------|-------------------------------------------------------------------|---------------|
-| GET             | `/api/v1/transactions`     | Fetch all transactions.                                           | Yes           |
-| POST            | `/api/v1/transactions`     | Add a new transaction (Income or Expense).                        | Yes           |
-| DELETE          | `/api/v1/transactions/:id` | Delete a transaction by its ID.                                   | Yes           |
-| PUT             | `/api/v1/transactions/:id` | Edit a specific transaction by ID.                                | Yes           |
+---
 
-#### **Goal** 🎯
-| **HTTP Method** | **Endpoint**               | **Description**                                                   | **Protected** |
-|-----------------|----------------------------|-------------------------------------------------------------------|---------------|
-| GET             | `/api/v1/goals`            | Fetch all goals for the logged-in user.                           | Yes           |
-| POST            | `/api/v1/goals`            | Create a new financial goal (target amount, contributions, etc.). | Yes           |
-| PUT             | `/api/v1/goals/:id`        | Edit an existing financial goal by ID.                            | Yes           |
-| DELETE          | `/api/v1/goals/:id`        | Delete a goal by its ID.                                          | Yes           |
+## **Transaction** 💳
+
+| **HTTP Method** | **Endpoint**               | **Description**                                                   | **Protected** | **Data Fields** |
+|-----------------|----------------------------|-------------------------------------------------------------------|---------------|-----------------|
+| **GET**         | `/api/v1/transactions`     | Fetch all transactions for the authenticated user.                | Yes           | Returns: `type` (`Income`/`Expense`), `name`, `amount`, `date`, `category` (for expenses), `user` |
+| **POST**        | `/api/v1/transactions`     | Add a new transaction.                                            | Yes           | Requires: `type`, `name`, `amount`, `date` *(optional)*, `category` *(required if Expense)* |
+| **PUT**         | `/api/v1/transactions/:id` | Edit a transaction by ID.                                         | Yes           | Accepts: `type`, `name`, `amount`, `date`, `category` |
+| **DELETE**      | `/api/v1/transactions/:id` | Delete a transaction by ID.                                       | Yes           | Requires: Transaction ID in URL. |
+
+---
+
+## **Goal** 🎯
+
+| **HTTP Method** | **Endpoint**               | **Description**                                                   | **Protected** | **Data Fields** |
+|-----------------|----------------------------|-------------------------------------------------------------------|---------------|-----------------|
+| **GET**         | `/api/v1/goals`            | Fetch all goals for the authenticated user.                       | Yes           | Returns: `goalName`, `targetAmount`, `completionDate`, `monthlyContribution`, `user` |
+| **POST**        | `/api/v1/goals`            | Create a new financial goal.                                      | Yes           | Requires: `goalName`, `targetAmount`, `completionDate` *(optional)*, `monthlyContribution` *(optional)* |
+| **PUT**         | `/api/v1/goals/:id`        | Edit a goal by ID.                                                 | Yes           | Accepts: `goalName`, `targetAmount`, `completionDate`, `monthlyContribution` |
+| **DELETE**      | `/api/v1/goals/:id`        | Delete a goal by ID.                                              | Yes           | Requires: Goal ID in URL. |
 
 ### Authentication 🔑
 
