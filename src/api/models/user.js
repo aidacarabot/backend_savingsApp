@@ -53,7 +53,6 @@ const userSchema = new Schema({
     },
     profilePicture: {
       type: String,
-      default: '/img/default-profile.png',
     },
     monthlySalary: {
       type: Number,
