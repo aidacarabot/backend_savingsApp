@@ -96,7 +96,7 @@ const updateUser = async(req, res) => {
     // Si se va a cambiar la imagen de perfil, eliminamos la antigua (si existe)
     if (req.file) {
       console.log('Nuevo archivo de imagen recibido:', req.file);
-      if (user.profilePicture && user.profilePicture !== '/img/default-profile.png') {
+      if (user.profilePicture && user.profilePicture !== '') {
         // Eliminar la imagen anterior de Cloudinary
         await deleteImgCloudinary(user.profilePicture);
       }
@@ -162,7 +162,7 @@ const deleteUser = async (req, res) => {
     }
 
     //? Si tiene una imagen personalizada (no la por defecto), eliminarla de Cloudinary
-    if (user.profilePicture && user.profilePicture !== '/img/default-profile.png') {
+    if (user.profilePicture && user.profilePicture !== '') {
       await deleteImgCloudinary(user.profilePicture);
     }
 
