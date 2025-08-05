@@ -139,8 +139,8 @@ const updateUser = async(req, res) => {
     return res.status(200).json({message: "User updated successfully", user: updatedUser});
     
   } catch (error) {
-    const errorMessage = error.message || "Error updating user";
-    res.status(400).json({ message: errorMessage, error: error.message });
+    console.error("Error en updateUser:", error); // Agrega este log para depurar
+    res.status(500).json({ message: "Error updating user", error: error.message });
   }
 }
 
