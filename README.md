@@ -37,7 +37,7 @@ This is the backend for the **Savings App**, a personal finance application desi
 | **HTTP Method** | **Endpoint**               | **Description**                                                   | **Protected** | **Data Fields** |
 |-----------------|----------------------------|-------------------------------------------------------------------|---------------|-----------------|
 | **GET**         | `/api/v1/transactions`     | Fetch all transactions for the authenticated user.                | Yes           | Returns: `type` (`Income`/`Expense`), `name`, `amount`, `date`, `category` (for expenses), `user` |
-| **POST**        | `/api/v1/transactions`     | Add a new transaction.                                            | Yes           | Requires: `type`, `name`, `amount`, `date` *(optional)*, `category` *(required if Expense)* |
+| **POST**        | `/api/v1/transactions`     | Add a new transaction.                                            | Yes           | Requires: `type`, `name`, `amount`, `date`, `category` *(required if Expense)* |
 | **PUT**         | `/api/v1/transactions/:id` | Edit a transaction by ID.                                         | Yes           | Accepts: `type`, `name`, `amount`, `date`, `category` |
 | **DELETE**      | `/api/v1/transactions/:id` | Delete a transaction by ID.                                       | Yes           | Requires: Transaction ID in URL. |
 
