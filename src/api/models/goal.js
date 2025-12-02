@@ -27,6 +27,11 @@ const goalSchema = new Schema ({
     type: Number,
     required: true,
     min: [0, 'Monthly contribution must be a positive number'], // la contribución mensual debe ser un número positivo
+  },
+  currentAmount: {
+    type: Number,
+    default: 0,
+    min: [0, 'Current amount cannot be negative']
   }
 
 }, {

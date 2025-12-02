@@ -1,4 +1,3 @@
-
 # Savings App Backend 💸
 
 This is the backend for the **Savings App**, a personal finance application designed to track users' income, expenses, and goals. The app helps users manage their finances by allowing them to set financial goals, track transactions, and view summaries of their monthly income and expenses. 📊💰
@@ -7,7 +6,7 @@ This is the backend for the **Savings App**, a personal finance application desi
 
 - **User Authentication** 🔐: Users can register, log in, and manage their profiles.
 - **Transaction Management** 🧾: Users can track their income and expenses, with categorization for better financial management.
-- **Goal Management** 🎯: Users can set financial goals, specify target amounts, and track progress towards achieving them.
+- **Goal Management** 🎯: Users can set financial goals, specify target amounts, track progress with current allocated amounts, and manage goal allocations.
 
 ## Technologies Used ⚙️
 
@@ -47,10 +46,17 @@ This is the backend for the **Savings App**, a personal finance application desi
 
 | **HTTP Method** | **Endpoint**               | **Description**                                                   | **Protected** | **Data Fields** |
 |-----------------|----------------------------|-------------------------------------------------------------------|---------------|-----------------|
-| **GET**         | `/api/v1/goals`            | Fetch all goals for the authenticated user.                       | Yes           | Returns: `goalName`, `targetAmount`, `completionDate`, `monthlyContribution`, `user` |
-| **POST**        | `/api/v1/goals`            | Create a new financial goal.                                      | Yes           | Requires: `goalName`, `targetAmount`, `completionDate` *(optional)*, `monthlyContribution` *(optional)* |
-| **PUT**         | `/api/v1/goals/:id`        | Edit a goal by ID.                                                 | Yes           | Accepts: `goalName`, `targetAmount`, `completionDate`, `monthlyContribution` |
+| **GET**         | `/api/v1/goals`            | Fetch all goals for the authenticated user.                       | Yes           | Returns: `goalName`, `targetAmount`, `completionDate`, `monthlyContribution`, `currentAmount`, `user` |
+| **POST**        | `/api/v1/goals`            | Create a new financial goal.                                      | Yes           | Requires: `goalName`, `targetAmount`, `completionDate` *(optional)*, `monthlyContribution` *(optional)*<br>Note: `currentAmount` defaults to 0 |
+| **PUT**         | `/api/v1/goals/:id`        | Edit a goal by ID.                                                | Yes           | Accepts: `goalName`, `targetAmount`, `completionDate`, `monthlyContribution`, `currentAmount` |
 | **DELETE**      | `/api/v1/goals/:id`        | Delete a goal by ID.                                              | Yes           | Requires: Goal ID in URL. |
+
+### Goal Management Features 🎯
+
+- **Current Amount Tracking**: Each goal now tracks how much money has been allocated to it via the `currentAmount` field
+- **Progress Calculation**: Progress is calculated as `(currentAmount / targetAmount) * 100`
+- **Goal Allocation Management**: Users can add or remove money from goals through the frontend interface
+- **Automatic Calculations**: The system automatically calculates completion dates or monthly contributions based on provided data
 
 ### Authentication 🔑
 
@@ -68,11 +74,16 @@ This is the backend for the **Savings App**, a personal finance application desi
   - `404 Not Found`: Resource not found.
   - `500 Internal Server Error`: Server-side issues.
 
+### Data Validation 📋
+
+- **Goals**: `targetAmount` must be greater than 0, `currentAmount` cannot be negative, completion dates must be in the future
+- **Transactions**: `amount` must be positive, `type` must be either "Income" or "Expense"
+- **Users**: Email must be valid and unique, passwords must meet security requirements
+
 ### Deployment 🚀
 
 This backend is deployed and running on [Vercel](https://backend-savings-app.vercel.app/).
 
 ### Development 🛠️
 
-For development, use tools like Insomnia to test API requests. Ensure MongoDB is running and connected.
-
+For development, use tools like Insomnia or Postman to test API requests. Ensure MongoDB is running and connected.

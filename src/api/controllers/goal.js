@@ -34,8 +34,9 @@ const createGoal = async (req, res) => {
       targetAmount,
       completionDate: calculatedCompletionDate,
       monthlyContribution: calculatedMonthlyContribution,
+      currentAmount: 0,
       ageAtGoalCompletion,
-      user: userId // <-- Add this line
+      user: userId
     });
 
     const savedGoal = await newGoal.save();
@@ -92,6 +93,9 @@ const editGoal = async (req, res) => {
     goal.targetAmount = targetAmount || goal.targetAmount;
     goal.completionDate = calculatedCompletionDate || goal.completionDate;
     goal.monthlyContribution = calculatedMonthlyContribution || goal.monthlyContribution;
+     if (currentAmount !== undefined) {
+      goal.currentAmount = currentAmount;
+    }
 
     //? Guardamos el goal actualizado
     const updatedGoal = await goal.save();
