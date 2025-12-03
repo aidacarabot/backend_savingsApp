@@ -64,7 +64,7 @@ const getAllGoals = async (req, res) => {
 //! EDIT GOAL
 const editGoal = async (req, res) => {
   const { id } = req.params; // Obtenemos el id del goal
-  const { goalName, targetAmount, completionDate, monthlyContribution } = req.body;
+  const { goalName, targetAmount, completionDate, monthlyContribution, currentAmount } = req.body;
 
   try {
     const goal = await Goal.findById(id); // Buscamos el goal por su id
@@ -93,13 +93,13 @@ const editGoal = async (req, res) => {
     goal.targetAmount = targetAmount || goal.targetAmount;
     goal.completionDate = calculatedCompletionDate || goal.completionDate;
     goal.monthlyContribution = calculatedMonthlyContribution || goal.monthlyContribution;
-     if (currentAmount !== undefined) {
+    if (currentAmount !== undefined) {
       goal.currentAmount = currentAmount;
     }
 
     //? Guardamos el goal actualizado
     const updatedGoal = await goal.save();
-    res.status(200).json('Goal updated successfully', updatedGoal) // Enviamos el goal actualizado como respuesta
+    res.status(200).json(updatedGoal) // Enviamos el goal actualizado como respuesta
   } catch (error) {
     res.status(500).json({ message: 'Error updating goal:', error: error.message }) // Si hay algún error, respondemos con un 500
   }
