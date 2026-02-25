@@ -26,19 +26,16 @@ const transactionSchema = new Schema(
     category: {
       type: String,
       enum: [
-        'Home 🏠',
-        'Transportation 🚗',
-        'Groceries 🛒',
-        'Health 🏥',
-        'Entertainment 🎭',
-        'Travel ✈️',
-        'Subscriptions 💳',
-        'Shopping 🛍️',
-        'Education 📚',
-        'Gifts 🎁',
-        'Debt 🏦',
-        'Leisure 🍸',
-        'Other ❓'
+        'Home',
+        'Groceries',
+        'Dining & Drinks',
+        'Transport',
+        'Lifestyle',
+        'Entertainment',
+        'Health & Fitness',
+        'Travel',
+        'Debt',
+        'Other'
       ],
       required: function () {
         return this.type === 'Expense' // la categoría es requerida solo si el tipo es 'expense'
