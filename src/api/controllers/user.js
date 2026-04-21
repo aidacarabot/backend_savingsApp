@@ -35,6 +35,22 @@ const getUserById = async (req, res) => {
 const register = async (req, res) => {
   const {name, birthDate, email, password, repeatPassword} = req.body; //destructuring the request body
   try {
+    //? Validar longitud mínima de contraseña
+    if (!password || password.length < 8) {
+      return res.status(400).json({ error: "Password must be at least 8 characters" });
+    }
+
+    //? Validar que las contraseñas coinciden
+    if (password !== repeatPassword) {
+      return res.status(400).json({ error: "Passwords do not match" });
+    }
+
+    //? Verificar si el usuario ya existe
+    const userDuplicated = await User.findOne({ email });
+    if (userDuplicated) {
+      return res.status(409).json({ error: "Email already registered" });
+    }
+
     const newUser = new User({
       name,
       birthDate,
@@ -42,21 +58,10 @@ const register = async (req, res) => {
       password
     });
 
-    //? Validar que las contraseñas coinciden
-    if (password !== repeatPassword) {
-      return res.status(400).json("Passwords do not match"); // Si las contraseñas no coinciden, enviar un mensaje de error
-    }
-
-    //? Verificar si el usuario ya existe
-    const userDuplicated = await User.findOne({ email });
-    if (userDuplicated) {
-      return res.status(400).json("User already exists with this email"); // Enviar error si el usuario ya existe
-    }
-
     const savedUser = await newUser.save(); //save the user to the database
     res.status(201).json(savedUser); //send the saved user as a response
   } catch (error) {
-    res.status(400).json({message: "Error registering user:",error: error.message}); //send error response
+    res.status(400).json({ error: error.message }); //send error response
   }
 }
 
