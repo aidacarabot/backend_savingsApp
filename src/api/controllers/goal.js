@@ -54,7 +54,7 @@ const createGoal = async (req, res) => {
 //! GET ALL GOALS
 const getAllGoals = async (req, res) => {
   try {
-    const goals = await Goal.find();
+    const goals = await Goal.find({ user: req.user._id });
     return res.status(200).json(goals); 
   } catch (error) {
     return res.status(500).json({ message: "Error fetching goals:", error: error.message });
