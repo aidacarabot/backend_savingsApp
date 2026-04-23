@@ -4,7 +4,7 @@ const User = require('../models/user')
 //! GET ALL TRANSACTIONS
 const getAllTransactions = async (req, res) => {
   try {
-    const transactions = await Transaction.find() // Obtener todas las transacciones
+    const transactions = await Transaction.find({ user: req.user._id }) // Obtener solo las transacciones del usuario autenticado
     return res.status(200).json(transactions) // Enviar las transacciones como respuesta
   } catch (error) {
     return res
@@ -54,12 +54,20 @@ const addTransaction = async (req, res) => {
 //! DELETE TRANSACTION
 const deleteTransaction = async (req, res) => {
   const { id } = req.params //obtener el id de transaction
+  const userId = req.user._id
 
   try {
-    const deletedTransaction = await Transaction.findByIdAndDelete(id) //eliminamos la transaccion y si no se encuentra...
-    if (!deletedTransaction) {
+    const transaction = await Transaction.findById(id)
+    if (!transaction) {
       return res.status(404).json('Transaction not found')
     }
+
+    if (transaction.user.toString() !== userId.toString()) {
+      return res.status(403).json('Unauthorized: this transaction does not belong to you')
+    }
+
+    await transaction.deleteOne()
+    await User.findByIdAndUpdate(userId, { $pull: { transactions: id } })
 
     res.status(200).json('Transaction deleted successfully')
   } catch (error) {
@@ -73,11 +81,16 @@ const deleteTransaction = async (req, res) => {
 const editTransaction = async (req, res) => {
   const { id } = req.params
   const { type, name, amount, date, category } = req.body
+  const userId = req.user._id
 
   try {
     const transaction = await Transaction.findById(id) //buscamos transaction por id
     if (!transaction) {
       return res.status(404).json('Transaction not found')
+    }
+
+    if (transaction.user.toString() !== userId.toString()) {
+      return res.status(403).json('Unauthorized: this transaction does not belong to you')
     }
 
     //? Si el tipo es "Expense", asignamos la categoría
