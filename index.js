@@ -32,6 +32,12 @@ app.use((req, res) => {
   return res.status(404).json({ message: "Route not found" });
 });
 
+// Global error handler — always returns JSON, never HTML
+app.use((err, req, res, next) => {
+  const status = err.status || err.statusCode || 500;
+  return res.status(status).json({ message: err.message || 'Internal server error' });
+});
+
 app.listen(3000, () => {
   console.log('Server is running on http://localhost:3000');
 })
